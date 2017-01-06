@@ -1,0 +1,16 @@
+ar_article_homepage:
+    path:     /articles
+    defaults: { _controller: ARArticleBundle:Article:index }
+    methods:  [GET]
+ar_article_view:
+    path:      /articles/{slug}
+    defaults:  { _controller: ARArticleBundle:Article:view }
+    methods:  [GET]
+ar_article_add:
+    path:      /articles
+    defaults:  { _controller: ARArticleBundle:Article:add }
+    methods:  [POST]
+ar_article_delete:
+    path:      /articles/{id}
+    defaults:  { _controller: ARArticleBundle:Article:delete }
+    methods:  [POST]
