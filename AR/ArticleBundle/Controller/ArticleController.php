@@ -14,112 +14,112 @@ class ArticleController extends Controller
 {
 
 	/**
-	 * [indexAction lister les article]
-	 * @return [type] [flux json]
-	 */
-    public function indexAction()
-    {
-		 $em = $this->getDoctrine()->getManager();
-		 $articleRep= $em->getRepository('ARArticleBundle:Article');
-		 $articles = $articleRep->findAll();
-        
-        /* @var $Article Article[] */
-        $extractedArticles = [];
-        foreach ($articles as $article) {
-            $extractedArticles[] = [
-	            'Title' 		=> $article->getTitle(),
-	            'Leading' 		=> $article->getLeadin(),
+	* [indexAction lister les article]
+	* @return [type] [flux json]
+	*/
+	public function indexAction()
+	{
+		$em = $this->getDoctrine()->getManager();
+		$articleRep= $em->getRepository('ARArticleBundle:Article');
+		$articles = $articleRep->findAll();
+
+		/* @var $Article Article[] */
+		$extractedArticles = [];
+		foreach ($articles as $article) {
+			$extractedArticles[] = [
+				'Title' 		=> $article->getTitle(),
+				'Leading' 		=> $article->getLeadin(),
 				'Body' 			=> $article->getBody(),
 				'CreatedAt' 	=> $article->getCreatedAt(),
 				'Slug' 			=> $article->getSlug(),
 				'CreatedBy' 	=> $article->getCreatedBy(),
-            ];
-        }
-		//return new JsonResponse($extractedArticles);
+			];
+		}
+
 		return new JsonResponse($extractedArticles, Response::HTTP_OK );
-    }
+	}
 
 	/**
-	 * [indexAction visualiser un article]
-	 * @return [type] [flux json]
-	 */
-    public function viewAction($slug)
-    {
-        
-		 $em = $this->getDoctrine()->getManager();
-		 $articleRep= $em->getRepository('ARArticleBundle:Article');
-		 $articles = $articleRep->findBy(
-			  array('slug' => $slug),
-			  array('createdAt' => 'desc'),        
-			  1,                              
-			  0                              
-			);
+	* [indexAction visualiser un article]
+	* @return [type] [flux json]
+	*/
+	public function viewAction($slug)
+	{
 
-        if (empty($articles)) {
-            return new JsonResponse(['message' => 'Article introuvable !'], Response::HTTP_NOT_FOUND);
-        }
+		$em = $this->getDoctrine()->getManager();
+		$articleRep= $em->getRepository('ARArticleBundle:Article');
+		$articles = $articleRep->findBy(
+			array('slug' => $slug),
+			array('createdAt' => 'desc'),        
+			1,                              
+			0                              
+		);
 
-        /* @var $Article Article[] */
-        $extractedArticles = [];
-        foreach ($articles as $article) {
-            $extractedArticles[] = [
-	            'Title' 		=> $article->getTitle(),
-	            'Leading' 		=> $article->getLeadin(),
+		if (empty($articles)) {
+			return new JsonResponse(['message' => 'Article introuvable !'], Response::HTTP_NOT_FOUND);
+		}
+
+		/* @var $Article Article[] */
+		$extractedArticles = [];
+		foreach ($articles as $article) {
+			$extractedArticles[] = [
+				'Title' 		=> $article->getTitle(),
+				'Leading' 		=> $article->getLeadin(),
 				'Body' 			=> $article->getBody(),
 				'CreatedAt' 	=> $article->getCreatedAt(),
 				'Slug' 			=> $article->getSlug(),
 				'CreatedBy' 	=> $article->getCreatedBy(),
-            ];
-        }
-		
+				];
+		}
+
 		return new JsonResponse($extractedArticles, Response::HTTP_OK );
-    }
+	}
 
 	/**
-	 * [indexAction creation  d'article]
-	 * @return [type] [flux json]
-	 */
-    public function addAction(Request $request)
-    {	
-    	 $data = json_decode($request->getContent(), true);
+	* [indexAction creation  d'article]
+	* @return [type] [flux json]
+	*/
+	public function addAction(Request $request)
+	{	
+		$data = json_decode($request->getContent(), true);
 
 		$article = new Article();
 		$form = $this->get('form.factory')->create(new ArticleType, $article);
-    	$form->handleRequest($request);
+		$form->handleRequest($request);
 
-    	$article->setTitle($data["title"]);
+		$article->setTitle($data["title"]);
 		$article->setLeadin($data["leading"]);
 		$article->setBody($data["body"]);
 		$article->setCreatedBy($data["createdBy"]);
 
-    		$em = $this->getDoctrine()->getManager();
-      		$em->persist($article);
-      		$em->flush();
+		$em = $this->getDoctrine()->getManager();
+		$em->persist($article);
+		$em->flush();
 
-        return new JsonResponse($data, Response::HTTP_CREATED );
+		return new JsonResponse($data, Response::HTTP_CREATED );
 
-    }
+	}
 	/**
-	 * [indexAction suppression d'un article]
-	 * @return [type] [flux json]
-	 */
-    public function deleteAction($id)
-    {	
+	* [indexAction suppression d'un article]
+	* @return [type] [flux json]
+	*/
+	public function deleteAction($id)
+	{	
 
 
-    	$em = $this->getDoctrine()->getManager();
+	$em = $this->getDoctrine()->getManager();
 
-   		$article = $em->getRepository('ARArticleBundle:Article')->find($id);
+	$article = $em->getRepository('ARArticleBundle:Article')->find($id);
 
-        if (null === $article) {
-            return new JsonResponse(['message' => 'Article introuvable !'], Response::HTTP_NOT_FOUND);
-        }
+	if (null === $article) {
+		return new JsonResponse(['message' => 'Article introuvable !'], Response::HTTP_NOT_FOUND);
+	}
 
-        $em->remove($article);
+	$em->remove($article);
 
-        $em->flush();
+	$em->flush();
 
-		return new JsonResponse(['message' => 'Article supprimé !'], Response::HTTP_OK);
+	return new JsonResponse(['message' => 'Article supprimé !'], Response::HTTP_OK);
 
 	}
 
